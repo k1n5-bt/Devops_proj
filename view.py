@@ -1,24 +1,41 @@
-from app import app
+from app import app, db
+from flask import request, render_template, session, flash, redirect, url_for
+from form import LoginForm
+from flask_login import current_user, login_user
+from models import User
+from flask_login import logout_user,login_required
+from werkzeug.urls import url_parse
 
 
-@app.route('/api/health', methods=['GET', 'POST'])
-def Health():
-    response = app.response_class(
-        status=200,
-    )
-    return response
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
 
 
 @app.route('/')
+@app.route('/index')
+@login_required
 def index():
-    return 'Привет'
+    return render_template('main.html',db.Model)
 
 
-@app.route('/main/')
-def hello():
-    return 'Hello!'
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
+        if user is None or not user.check_password(form.password.data):
+            flash('Invalid username or password')
+            return redirect(url_for('login'))
+        login_user(user, remember=form.remember_me.data)
+        next_page = request.args.get('next')
+        if not next_page or url_parse(next_page).netloc != '':
+            next_page = url_for('index')
+        return redirect(next_page)
 
 
-@app.route('/user/<int:id>/')
-def user_profile(id):
-    return f"Profile page of user #{id}"
+
+
+
+
