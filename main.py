@@ -1,5 +1,7 @@
-from app import app
-import view
+from appl.app import app, db
+from appl.models import User
 
-if __name__ == "__main__":
-    app.run()
+@app.shell_context_processor
+def make_shell_context():
+    return {'db': db, 'User': User}
+app.run(debug=True, use_reloader=False)
