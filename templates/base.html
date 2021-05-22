@@ -1,0 +1,30 @@
+<html>
+    <head>
+      <title>WebSite</title>
+    </head>
+    <body>
+        <nav>Website:
+            <a href= "{{url_for('index')}}">Home</a>
+            {% if current_user.is_anonymous %}
+                <a href="{{ url_for('login') }}">Login</a>
+            {% else %}
+                <a href="{{ url_for('logout') }}">Logout</a>
+            {% endif %}
+            <a href= {{url_for('catalog')}}> Catalog </a>
+            {% if current_user.isAdmin %}
+                <a href="{{ url_for('addItem') }}">Add item</a>
+            {% endif %}
+        </nav>
+        <hr>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </body>
+</html>
